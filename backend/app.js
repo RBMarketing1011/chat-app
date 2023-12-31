@@ -1,8 +1,8 @@
 // Dependencies
 const express = require('express')
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
 const dotenv = require('dotenv')
-const mongoose = require('mongoose')
 const morgan = require('morgan')
 const path = require('path')
 const MongoStore = require('connect-mongo')
@@ -50,6 +50,15 @@ let sessionConfig = {
 
 //Use session config in express-session
 app.use(session(sessionConfig))
+
+//setup CORS policies
+//CORS Options 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200,
+  credentials: true
+}
+app.use(cors(corsOptions))
 
 //send secure cookie if in production
 if (process.env.NODE_ENV === 'production')

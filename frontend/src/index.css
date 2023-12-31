@@ -1,0 +1,55 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --color-neutral-100: #ffffff;
+  --color-neutral-900: #000000;
+
+  --color-primary-100: #ededed;
+  --color-primary-300: #00abf0;
+  --color-primary-500: #112e42;
+  --color-primary-700: #081b29;
+
+  --color-accent-100: #FFEBC2;
+  --color-accent-300: #FFBB33;
+  --color-accent-500: #E09600;
+  --color-accent-700: #523600;
+
+  color: var(--color-primary-100);
+  background-color: var(--color-primary-700);
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+  font-family: inherit;
+}
+
+button {
+  outline: none;
+  font-family: inherit;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
