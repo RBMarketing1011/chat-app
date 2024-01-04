@@ -1,29 +1,66 @@
 const User = require('../../db/models/users')
+const genToken = require('../../utils/genToken')
+const Jwt = require('jsonwebtoken')
 
 //  POST    
 //  Public
 //  /api/users/register
 const userRegister = async (req, res) =>
 {
-  try
+  const { firstName, lastName, email, password } = req.body
+
+  const userExists = await User.findOne({ email })
+
+  if (userExists)
   {
-    const { firstName, lastName, email, password } = req.body
-    const role = 'customer'
-    const displayName = `${ firstName } ${ lastName }`
-    const user = new User({ displayName, firstName, lastName, email, role })
-    const registeredUser = await User.register(user, password)
-    req.login(registeredUser, err =>
+    res.status(401)
+    throw new Error('User Already Exists, Please log In')
+  } else
+  {
+    try
     {
-      if (err) return next(err)
-      res.status(200).json({ message: 'User Registered Successfully' })
-    })
-  } catch (err)
-  {
-    res.status(401).json(err.message)
+      const role = 'customer'
+      const displayName = `${ firstName } ${ lastName }`
+      const user = await User.create({ displayName, firstName, lastName, email, password, role })
+
+      genToken(res, user._id)
+      const sendUser = await User.findById(user._id)
+
+      res.status(200).json(sendUser)
+    } catch (err)
+    {
+      res.status(401).json(err)
+      console.log(err)
+    }
   }
 }
 
-// =========== User Login Set Up and executed by PASSPORT.JS
+//POST
+//Public
+//  /api/users/login
+const userLogin = async (req, res) =>
+{
+  const { email, password } = req.body
+  const user = await User.findOne({ email })
+
+  if (user && (await user.matchPassword(password)))
+  {
+    try
+    {
+      genToken(res, user._id)
+      const sendUser = await User.findById(user._id).select('-password')
+      res.status(200).json(sendUser)
+    } catch (err)
+    {
+      res.status(401).json(err)
+      console.log(err)
+    }
+  } else
+  {
+    res.status(401)
+    throw new Error('Invalid Credentials')
+  }
+}
 
 //  GET
 //  Private {Can Get your own, Admin can get all}
@@ -120,10 +157,32 @@ const deleteUser = async (req, res) =>
   }
 }
 
+//POST
+//Private
+//  /api/users/profile
+const getProfileFromJWT = async (req, res) =>
+{
+  let token
+  token = req.cookies._jwt_token
+
+  if (token)
+  {
+    const decoded = Jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.userId).select('-password')
+
+    res.json(user)
+  } else
+  {
+    res.status(200)
+  }
+}
+
 module.exports = {
   userRegister,
+  userLogin,
   getUser,
   getAllUsers,
+  getProfileFromJWT,
   userLogout,
   updateUser,
   deleteUser

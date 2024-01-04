@@ -3,33 +3,23 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const dotenv = require('dotenv')
+//initialize dotenv
+dotenv.config()
 const morgan = require('morgan')
 const path = require('path')
 const MongoStore = require('connect-mongo')
 const session = require('express-session')
 
-//initialize dotenv
-dotenv.config()
+//importing database connection
+const connectDB = require('../backend/db/connection')
 
 //initialize express
 const app = express()
 
-// PASSPORT CONFIG
-const passport = require('passport')
-const localStrategy = require('passport-local')
-const GoogleStrategy = require('./api/passport/google')(passport)
-
-//importing DB schemas
-const user = require('./db/models/users')
-
-//importing my files
-const connectDB = require('../backend/db/connection')
-
-// MORGAN CONFIG
-if (process.env.Node_ENV === 'development')
-{
-  app.use(morgan('dev'))
-}
+//Setup Dependencies
+app.use(cookieParser())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 //setup session config
 let sessionConfig = {
@@ -55,47 +45,55 @@ app.use(session(sessionConfig))
 //CORS Options 
 const corsOptions = {
   origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200
 }
-app.use(cors(corsOptions))
 
-//send secure cookie if in production
-if (process.env.NODE_ENV === 'production')
-{
-  sessionConfig.cookie.secure = true
-}
+app.use(cors(corsOptions))
 
 // Import Route Files
 //Users
 const userAuthRoutes = require('./api/routes/userRoutes')
-const googleAuthRoutes = require('./api/routes/googleAuthRoutes')
+//passport login with social accounts
+const googleAuthRoutes = require('./api/routes/passportAuthRoutes/googleAuthRoutes')
 //Messages
 const messageRoutes = require('./api/routes/messageRoutes')
 //Groups
 const groupRoutes = require('./api/routes/groupRoutes')
 
+//import passport config file 
+const passport = require('passport')
 // PASSPORT MIDDLEWARE
 app.use(passport.initialize())
 app.use(passport.session())
-passport.use(new localStrategy({
-  usernameField: 'email'
-}, user.authenticate()))
+require('./api/routes/passportAuthRoutes/googleAuthRoutes')
+Google()
 
-//Setup Dependencies
-app.use(cookieParser())
-app.use(express.urlencoded({ extended: true }))
-app.use(express.static(path.join(__dirname, 'public')))
-
-
-app.get('/', (req, res) =>
+//set up production build
+if (process.env.NODE_ENV === 'production')
 {
-  res.send('This is Home page of the App')
-})
+  const __dirname = path.resolve()
+  app.use(express.static(path.join(__dirname, '/frontend/dist')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
+  )
+  //if production send secure cookie
+  sessionConfig.cookie.secure = true
+} else // If In Development
+{
+  app.get('/', (req, res) =>
+  {
+    res.send('API is running....')
+  })
+  //Use Morgan in dev mode
+  app.use(morgan('dev'))
+}
 
 //Routes
-//Users
+//Passport social logins
 app.use('/api/users/google', googleAuthRoutes)
+//Users
 app.use('/api/users', userAuthRoutes)
 //Messages
 app.use('/api/messages', messageRoutes)

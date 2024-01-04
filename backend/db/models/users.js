@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
-const ppLocal = require('passport-local-mongoose')
+const bcrypt = require('bcrypt')
 
 const Message = require('./messages')
 
@@ -28,20 +28,35 @@ const user = new Schema({
     },
   },
   displayName: {
-    type: String
+    type: String,
+    required: true
   },
   firstName: {
     type: String,
-    unique: false
+    unique: false,
+    required: true
   },
   lastName: {
     type: String,
-    unique: false
+    unique: false,
+    required: true
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    required: true
+  },
+  password: {
+    type: String,
+    validate: {
+      validator: function (v)
+      {
+        return /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/.test(v)
+      },
+      message: 'Please Enter A Valid Password'
+    },
+    required: true,
   },
   phoneNumber: {
     type: Number,
@@ -72,17 +87,31 @@ const user = new Schema({
   } ]
 }, { timestamps: true })
 
-user.pre("save", function (next)
+// Match user entered password to hashed password in database
+user.methods.matchPassword = async function (enteredPassword)
+{
+  return await bcrypt.compare(enteredPassword, this.password)
+}
+
+// Encrypt password using bcrypt
+user.pre("save", async function (next)
 {
   if (this.email)
   {
     this.email = this.email.toLowerCase()
   }
 
+  if (!this.isModified('password'))
+  {
+    next()
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
   next()
 })
 
-user.post('findOneAndDelete', async (doc) =>
+user.post('findOneAndDelete', async function (doc)
 {
   if (doc)
   {
@@ -93,7 +122,5 @@ user.post('findOneAndDelete', async (doc) =>
     })
   }
 })
-
-user.plugin(ppLocal, { usernameField: 'email' })
 
 module.exports = mongoose.model('User', user)

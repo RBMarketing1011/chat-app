@@ -1,0 +1,50 @@
+.InputField {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.InputField input {
+  width: 100%;
+  margin-block: 1rem;
+
+  color: var(--color-accent-300);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-accent-300);
+}
+
+.InputField input::placeholder {
+  color: var(--color-accent-300);
+}
+
+.InputField input:focus {
+  outline: none;
+}
+
+.InputField input:-webkit-autofill,
+.InputField input:-webkit-autofill:hover, 
+.InputField input:-webkit-autofill:focus, 
+.InputField input:-webkit-autofill:active{
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--color-accent-300) !important;
+}
+
+.InputField .input-container {
+  position: relative;
+  width: 100%;
+}
+
+.InputField svg {
+  position: absolute;
+  top: 45%;
+  right: 3%;
+  transform: translateY(-50%);
+  color: var(--color-primary-300);
+
+  cursor: pointer;
+}

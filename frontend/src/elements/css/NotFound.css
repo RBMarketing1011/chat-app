@@ -1,11 +1,10 @@
-.HomeScreen {
+.NotFound {
   height: var(--mobile-height);
-  width: 70vw;
-  margin-inline: auto;
+  padding-block: 3rem;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 2rem;
   flex-direction: column;
+  gap: 2rem;
 }

@@ -1,7 +1,13 @@
+const express = require('express')
+const router = express.Router()
+const genToken = require('../../../utils/genToken')
+const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth2').Strategy
-const User = require('../../db/models/users')
+const User = require('../../../db/models/users')
 
-module.exports = (passport) =>
+let finalUser
+
+module.exports = Google = () =>
 {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -14,16 +20,19 @@ module.exports = (passport) =>
       try
       {
         const user = await User.findOne({ email: profile.email })
-        console.log(profile.email)
         if (user && user.provider.google.id === profile.id)
         {
           console.log('User Found With Google Data')
+
+          finalUser = user
+
           done(null, user)
         } else if (user && user.provider.google.id !== profile.id)
         {
           console.log('User Found With No Google Data ... Updating User With Google Data')
-          const { id } = user
-          const updateUser = await User.findByIdAndUpdate(id, {
+
+          const id = user._id
+          const user = await User.findByIdAndUpdate(id, {
             provider: {
               google: {
                 id: profile.id,
@@ -35,12 +44,16 @@ module.exports = (passport) =>
               }
             }
           })
-          await updateUser.save()
+          await user.save()
+
+          finalUser = user
+
           done(null, user)
         } else
         {
           console.log('No User Found')
-          const user = new User({
+
+          const user = await User.create({
             provider: {
               google: {
                 id: profile.id,
@@ -49,7 +62,6 @@ module.exports = (passport) =>
                 lastName: profile.family_name,
                 email: profile.email,
                 language: profile.language,
-                photos: '',
                 firstLogin: Date.now()
               }
             },
@@ -57,15 +69,19 @@ module.exports = (passport) =>
             firstName: profile.given_name,
             lastName: profile.family_name,
             email: profile.email,
+            password: 'Complete02!!',
             role: 'customer'
           })
-          const password = profile.id
-          await User.register(user, password)
+
+          finalUser = user
+
           done(null, user)
         }
-      } catch (error)
+      } catch (err)
       {
-        res.status(401).json({ message: 'Invalid Login' })
+
+        done(null, false, { message: 'Invalid Credentials' })
+        console.log(err)
       }
     }))
 
@@ -78,4 +94,22 @@ module.exports = (passport) =>
   {
     done(null, user)
   })
-} 
+}
+
+//=================== Google Auth Routes =============================
+
+router.route('')
+  .get(passport.authenticate('google', {
+    scope: [ 'email', 'profile' ]
+  }))
+
+router.route('/callback')
+  .get(passport.authenticate('google'),
+    (req, res) =>
+    {
+      genToken(res, finalUser._id)
+      res.redirect('http://localhost:3000')
+    }
+  )
+
+module.exports = router

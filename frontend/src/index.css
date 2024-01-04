@@ -1,8 +1,9 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: Poppins, sans-serif;
+  line-height: 1;
   font-weight: 400;
 
+  /* Colors */
   --color-neutral-100: #ffffff;
   --color-neutral-900: #000000;
 
@@ -16,28 +17,28 @@
   --color-accent-500: #E09600;
   --color-accent-700: #523600;
 
+  /* Height */
+  --mobile-height: calc(100vh - 80px);
+
   color: var(--color-primary-100);
   background-color: var(--color-primary-700);
 }
 
-html {
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
 *, *:before, *:after {
-  box-sizing: inherit;
+  box-sizing: border-box;
+  font-size: 1rem;
 }
 
 body, h1, h2, h3, h4, h5, h6, p, ol, ul {
   margin: 0;
   padding: 0;
-  font-weight: normal;
+  font-weight: 400;
 }
 
 a {
   text-decoration: none;
   font-family: inherit;
+  color: var(--color-primary-300);
 }
 
 button {

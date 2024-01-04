@@ -2,13 +2,14 @@ const express = require('express')
 const router = express.Router()
 
 const catchAsync = require('express-async-handler')
-const passport = require('passport')
 
 const {
   userRegister,
+  userLogin,
   userLogout,
   getUser,
   getAllUsers,
+  getProfileFromJWT,
   deleteUser,
   updateUser
 } = require('../controllers/usersController')
@@ -17,16 +18,16 @@ router.route('/register')
   .post(catchAsync(userRegister))
 
 router.route('/login')
-  .post(passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/failureLogin'
-  }))
+  .post(catchAsync(userLogin))
 
 router.route('/logout')
-  .get(userLogout)
+  .post(userLogout)
 
 router.route('/all')
   .get(catchAsync(getAllUsers))
+
+router.route('/profile')
+  .post(catchAsync(getProfileFromJWT))
 
 router.route('/:id')
   .get(catchAsync(getUser))

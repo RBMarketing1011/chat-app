@@ -1,0 +1,64 @@
+/* Button Utilities Classes */
+.BtnGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn {
+  width: 100%;
+  padding-block: .5rem;
+
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: 1rem;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: .3s ease;
+}
+
+.btn-primary {
+  --text-color: var(--color-primary-700);
+  --background-color: var(--color-primary-300);
+  --dark: var(--color-primary-700);
+  --light: var(--color-primary-100);
+}
+
+.btn-accent {
+  --text-color: var(--color-accent-700);
+  --background-color: var(--color-accent-300);
+  --dark: var(--color-accent-700);
+  --light: var(--color-accent-100);
+}
+
+.btn-solid {
+  border: 2px solid var(--background-color);
+  background: var(--background-color);
+  color: var(--dark);
+}
+
+.btn-solid:hover,
+.btn-solid:focus-within {
+  border: 2px solid var(--background-color);
+  background: var(--dark);
+  color: var(--background-color);
+  box-shadow: 0 0 8px var(--background-color);
+}
+
+.btn-outline {
+  border: 2px solid var(--background-color);
+  color: var(--background-color);
+  background: transparent;
+}
+
+.btn-outline:hover,
+.btn-outline:focus-within {
+  border: 2px solid var(--background-color);
+  color: var(--dark);
+  background: var(--background-color);
+  box-shadow: 0 0 8px var(--background-color);
+}

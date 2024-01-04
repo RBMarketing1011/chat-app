@@ -1,29 +1,89 @@
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* Main Containers */
+.main-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.container {
+  position: relative;
+  min-height: var(--mobile-height);
+  width: 100vw;
+
+  transform: translateY(80px);
+
+  z-index: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Heading CSS */
+.heading {
+  text-transform: uppercase;
+  color: var(--color-primary-100);
 }
 
-.card {
-  padding: 2em;
+/* text colors */
+.primary {
+  color: var(--color-primary-300);
 }
 
-.read-the-docs {
-  color: #888;
+.accent {
+  color: var(--color-accent-300);
+}
+
+.light {
+  color: var(--color-primary-100);
+}
+
+.dark {
+  color: var(--color-primary-700);
+}
+
+/* Text Sizing */
+.small {
+  font-size: .8rem;
+}
+
+.medium {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.large {
+  font-size: 1.8rem;
+}
+
+.x-large {
+  font-size: 2.3rem;
+  font-weight: 600;
+}
+
+/* font weight */
+.fw-300 {
+  font-weight: 300;
+}
+
+.fw-500 {
+  font-weight: 500
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+
+.fw-900 {
+  font-weight: 900;
+}
+
+/* Text Align */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
 }

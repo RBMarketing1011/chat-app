@@ -1,18 +1,32 @@
 import { apiSlice } from './apiSlice'
 
-export const userApiSlice = apiSlice.injectEndpoints({
+export const userApiEndpoints = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    //=======================User API Endpoints ===========================
-    login: builder.mutation({
+    register: builder.mutation({
       query: (data) => ({
         url: '/users/register',
         method: 'POST',
         body: data,
       }),
+    }),
+    login: builder.mutation({
+      query: (data) => ({
+        url: '/users/login',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    getProfileFromJWT: builder.mutation({
+      query: () => ({
+        url: '/users/profile',
+        method: 'POST'
+      })
     })
-  })
+  }),
 })
 
 export const {
-  useLoginMutation
-} = userApiSlice 
+  useLoginMutation,
+  useRegisterMutation,
+  useGetProfileFromJWTMutation
+} = userApiEndpoints
